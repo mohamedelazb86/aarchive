@@ -42,6 +42,10 @@ INSTALLED_APPS = [
 
     # my package
     "django_bootstrap5",
+    'django_summernote',
+    
+    # my apps
+    'settings',
 ]
 
 MIDDLEWARE = [
@@ -186,3 +190,5 @@ EMAIL_HOST_USER = 'mohamedelazab2017@gmail.com'
 EMAIL_HOST_PASSWORD = 'plykbteiiworauwx'
 
 EMAIL_USE_SSL = False
+
+LOGIN_REDIRECT_URL = '/'
