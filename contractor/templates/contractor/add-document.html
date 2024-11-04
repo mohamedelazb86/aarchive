@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}
+إضافة مستند
+{% endblock title %}
+
+{% block page_title %}إضافة مستند{% endblock page_title %}
+
+
+{% block css %}
+     <!--  BEGIN CUSTOM STYLE FILE  -->
+     <link href="{% static 'assets/css/scrollspyNav.css' %}" rel="stylesheet" type="text/css" />
+     <!--  END CUSTOM STYLE FILE  -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/pikaday.min.js"></script>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css">
+{% endblock css %}
+    
+
+{% block body %}
+{% include 'message.py' %}
+ <form action="{% url 'contractor:add-contractor-document' %}" method="post" class="col-lg-12" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="card component-card_1 col-lg-12">
+        <div class="card-body">
+            <div class="row">
+                                            
+                <div class="col-xl-1">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">كود المقاول </label>
+                        <input class="form-control form-control-lg" type="text" id='code' name='code' onkeyup="fetchContractorData()">
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">اسم المقاول </label>
+                        <input class="form-control" type="text" id='name' id='name' readonly >
+                    </div>
+                </div>
+                <div class="col-xl-2">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">القطاع </label>
+                        <input class="form-control form-control-sm" type="text" id='sector' name='sector' readonly >
+                    </div>
+                </div>
+
+                <div class="col-xl-3">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">المشروع </label>
+                        <input class="form-control form-control-sm" type="text" name='project' id='project' readonly >
+                    </div>
+                </div>
+                <div class="col-xl-2">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">كود الأرشيف </label>
+                        <input class="form-control form-control-sm" type="text" id='archive_code' name='archive_code'  readonly >
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card component-card_1 col-lg-12 ">
+        <div class="card-body">
+            <div class="row " >
+                                            
+                <div class="col-xl-4">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">البيان </label>
+                        <input class="form-control form-control-lg" type="text" id="statment" name="statment">
+                    </div>
+                </div>
+                <div class="col-xl-8">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">ملاحظات </label>
+                        <input class="form-control" type="text" id="notes" name="notes" >
+                    </div>
+                </div>
+            
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-12">
+                <label>الملف</label><span class="text-danger">* صيغة المرفق pdf </span>
+                <div class="col">
+                    <input class="form-control custom-file-input" type="file" name="file" class="file" accept=".pdf" id="file" onchange="PreviewImage();" required> <label class="custom-file-label" for="customFile">اختر الملف</label>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+                                
+            <div class="col-xl-6 mb-xl-0 mb-2">
+                <label for="exampleFormControlInput1">نوع المستند</label>
+
+                <select class="form-control form-control-lg" id="document_type" name="document_type">
+                    
+                    <option disabled>نوع المستند </option>
+                
+                {% for item in document_type %}
+        
+                    <option value="{{item.id}}">{{item}}</option>
+                {% endfor %}
+                    
+                </select>
+            </div>
+
+            <div class="col-xl-6">
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">التاريخ</label>
+                    <input type="text" class="form-control" id="date" name="date">
+                </div>
+            </div>
+        
+        
+        </div>
+
+        <div class="widget-content widget-content-area text-center split-buttons">
+            <button class="btn btn-success mb-2" type="submit" >إضافة مستند</button>
+           
+        </div>
+            
+
+        </div>
+    </div>
+
+</form>
+
+
+
+
+
+
+
+<div class="card component-card_1 col-lg-12">
+<div class="card-body "  >
+    <div class="row "  >
+        <div class="col" style="height: 700px;" >
+            <label >معاينة الملف</label>
+            <iframe class="page" size="All" id="viewer" frameborder="0" scrolling="no" ></iframe>
+        </div>
+    </div>
+</div>
+</div>
+
+
+{% endblock body %}
+
+
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function fetchContractorData() {
+        var contractorCode = $('#code').val();
+
+        if (contractorCode === "") {
+            // مسح الحقول إذا تم حذف كود المقاول
+            $('#name').val("");
+            $('#sector').val("");
+            $('#project').val("");
+            $('#archive_code').val("");
+            
+
+           
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'contractor:get-contractor-data' %}",
+            data: {
+                'code': contractorCode
+
+            },
+            dataType: 'json',
+            success: function (data) {
+                $('#name').val(data.name);
+                $('#sector').val(data.sector);
+                $('#project').val(data.project);
+                $('#archive_code').val(data.archive_code);
+                
+            }
+        });
+    }
+</script>
+
+<script> 
+    document.addEventListener('DOMContentLoaded', function() { 
+        new Pikaday({  
+            field: document.getElementById('date'), 
+            format: 'd-m-Y', // Set your desired date format 
+            defaultDate: new Date(), // Set today's date as the default 
+            toString(date, format) { 
+                // Customize the date format displayed in the input 
+                const day = date.getDate().toString().padStart(2, '0'); 
+                const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based 
+                const year = date.getFullYear(); 
+ 
+                return `${year}-${month}-${day}`; // Display format (e.g., "02-10-2024") 
+            }, 
+            setDefaultDate: true    // Ensure the default date is displayed 
+        }); 
+    }); 
+</script>
+
+<script type="text/javascript">
+    function PreviewImage() {
+        pdffile=document.getElementById("uploadPDF").files[0];
+        pdffile_url=URL.createObjectURL(pdffile);
+        $('#viewer').attr('src',pdffile_url);
+    }
+</script>
+{% endblock js %}
+    
+    

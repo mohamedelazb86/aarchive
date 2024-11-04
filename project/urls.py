@@ -18,12 +18,19 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+from settings.views import dashbord
 
 urlpatterns = [
     path('accounts/',include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('summernote/', include('django_summernote.urls')),
+    path('settings/',include('settings.urls')),
+    path('contractor/',include('contractor.urls')),
+    path('document/',include('document.urls')),
+    path('mail/',include('mail.urls')),
+
+    path('',dashbord),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns +=  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

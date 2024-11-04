@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+    DashBord
+{% endblock title %}
+
+
+{% block page_title %}
+   DashBord
+{% endblock page_title %}       
+
+
+{% block css %}
+        <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+        <link href="{% static 'assets/css/scrollspyNav.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'plugins/apex/apexcharts.css' %}" rel="stylesheet" type="text/css">
+        <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+{% endblock css %}
+    
+
+{% block body %}
+<div class="card col-12 component-card_1">
+  <div class="card-body">
+    
+      <div class="row">
+
+          <div class="col-xl-6">
+            <div id="chartDonut" class="col-xl-12 layout-spacing">
+              <div class="statbox widget box box-shadow">
+                  <div class="widget-header">                                
+                      <div class="row">
+                          <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                              <h4>عدد المستندات لكل قطاع</h4> 
+                          </div>
+                      </div>
+                  </div>
+                  <div class="widget-content widget-content-area">
+                    <div id="documentSector" class=""></div>
+                  </div>
+              </div>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock body %}
+
+
+{% block js %}
+
+
+<!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+<script src="{% static 'assets/js/scrollspyNav.js' %}"></script>
+<script src="{% static 'plugins/apex/apexcharts.min.js' %}"></script>
+<script src="{% static 'plugins/apex/custom-apexcharts.js' %}"></script>
+<!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+
+<script>
+  var sBar = {
+    chart: {
+        height: 350,
+        type: 'bar',
+        toolbar: {
+          show: false,
+        }
+    },
+    plotOptions: {
+        bar: {
+            horizontal: false,
+        }
+    },
+    dataLabels: {
+        enabled: false
+    },
+    series: [{
+        data: {{sector_data|safe}}
+    }],
+    xaxis: {
+        categories: {{sector_labels|safe}},
+    }
+}
+
+var chart = new ApexCharts(
+    document.querySelector("#documentSector"),
+    sBar
+);
+
+chart.render();
+</script>
+
+{% endblock js %}
+    
+    
+    

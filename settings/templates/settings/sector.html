@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+     القطاعات
+{% endblock title %}
+
+
+{% block page_title %}
+     القطاعات
+{% endblock page_title %}
+    
+ 
+ {% block css %}
+    <!-- BEGIN PAGE LEVEL CUSTOM STYLES -->
+    <link rel="stylesheet" type="text/css" href="{% static 'plugins/table/datatable/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'plugins/table/datatable/custom_dt_html5.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'plugins/table/datatable/dt-global_style.css' %}">
+    <!-- END PAGE LEVEL CUSTOM STYLES -->
+
+      <!--  BEGIN CUSTOM STYLE FILE  -->
+      <link href="{% static 'assets/css/scrollspyNav.css' %}" rel="stylesheet" type="text/css" />
+      <link href="{% static 'assets/css/components/custom-modal.css' %}" rel="stylesheet" type="text/css" />
+      <!--  END CUSTOM STYLE FILE  -->
+ {% endblock css %}
+
+       
+
+{% block body %}
+{% include 'message.py' %}
+<button type="button" class="btn btn-warning mb-2 mr-2" data-toggle="modal" data-target="#add-sector">إضافة قطاع</button>
+
+
+<div id="add-sector" class="modal animated slideInUp custo-slideInUp" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة قطاع</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'settings:add-sector' %}" method="post">
+                    {% csrf_token %}
+                    
+                    <label >الكود</label>
+                    <input id="code" type="text" name="code"  class="form-control" required>
+
+                    <label >أسم القطاع</label>
+                    <input id="name" type="text" name="name"  class="form-control" required>
+
+                    <label >ملاحظات</label>
+                    <input id="notes" type="text" name="notes"  class="form-control" required>
+
+                   
+                    <div class="modal-footer md-button">
+                        <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> تراجع</button>
+                        <button type="submit" class="btn btn-primary">إضافة قطاع</button>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div id="delete-sector" class="modal animated slideInUp custo-slideInUp" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal Header</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'settings:delete-sector' %}" method="post">
+                    {% csrf_token %}
+              <p class="modal-text">  هل تريد حذف هذا القطاع ؟؟؟</p>
+              <input id="id" type="hidden" name="id"  class="form-control" >
+              <input id="name" type="text" name="name"  class="form-control" required>
+            </div>
+            <div class="modal-footer md-button">
+                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> تراجع</button>
+                <button type="submit" class="btn btn-primary">حذف القطاع</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+<div id="edit-sector" class="modal animated slideInUp custo-slideInUp" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تعديل قطاع</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'settings:edit-sector' %}" method="post">
+                    {% csrf_token %}
+
+                    <input id="id" type="hidden" name="id"  class="form-control" >
+                    <label >الكود</label>
+                    <input id="code" type="text" name="code"  class="form-control" required>
+
+                    <label >أسم القطاع</label>
+                    <input id="name" type="text" name="name"  class="form-control" required>
+
+                    <label >ملاحظات</label>
+                    <input id="notes" type="text" name="notes"  class="form-control" required>
+
+            </div>
+            <div class="modal-footer md-button">
+                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> تراجع</button>
+                <button type="submit" class="btn btn-primary">تعديل قطاع </button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+<table id="html5-extension" class="table table-hover non-hover" style="width:100%">
+    <thead>
+        <tr>
+            <td>المسلسل</td>
+            <td> الكود</td>
+            <td>أسم القطاع</td>
+            <td>ملاحظات</td>
+            <th class="dt-no-sorting">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    
+    {% for object in sector %}
+           
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td> {{object.code}}</td>
+            <td> {{object.name}}</td>
+            <td>{{object.notes|safe}}</td>
+           
+               
+         
+            <td>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-dark btn-sm">العمليات</button>
+                    <button type="button" class="btn btn-dark btn-sm dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuReference1">
+                        <a class="dropdown-item" href="#" data-target="#delete-sector" data-toggle="modal"
+                        data-id="{{object.id}}"
+                        data-name="{{object.name}}"
+                        >حذف</a>
+                        <a class="dropdown-item" href="#" data-target="#edit-sector" data-toggle="modal"
+                        data-id="{{object.id}}"
+                        data-code="{{object.code}}"
+                        data-name="{{object.name}}"
+                        data-notes="{{object.notes}}"
+                        >تعديل</a>
+                        <a class="dropdown-item" href="#">عرض</a>
+                  
+                    </div>
+                    </div>
+            </td>
+        </tr>
+    {% endfor %}
+     
+    </tbody>
+</table>
+
+
+{% endblock body %}
+
+
+{% block js %}
+     <!-- BEGIN PAGE LEVEL CUSTOM SCRIPTS -->
+     <script src="{% static 'plugins/table/datatable/datatables.js' %}"></script>
+     <!-- NOTE TO Use Copy CSV Excel PDF Print Options You Must Include These Files  -->
+     <script src="{% static 'plugins/table/datatable/button-ext/dataTables.buttons.min.js' %}"></script>
+     <script src="{% static 'plugins/table/datatable/button-ext/jszip.min.js' %}"></script>    
+     <script src="{% static 'plugins/table/datatable/button-ext/buttons.html5.min.js' %}"></script>
+     <script src="{% static 'plugins/table/datatable/button-ext/buttons.print.min.js' %}"></script>
+     <script>
+         $('#html5-extension').DataTable( {
+             "dom": "<'dt--top-section'<'row'<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'B><'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>>>" +
+         "<'table-responsive'tr>" +
+         "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count  mb-sm-0 mb-3'i><'dt--pagination'p>>",
+             buttons: {
+                 buttons: [
+                  
+                 ]
+             },
+             "oLanguage": {
+                 "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+                 "sInfo": "Showing page _PAGE_ of _PAGES_",
+                 "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                 "sSearchPlaceholder": "Search...",
+                "sLengthMenu": "Results :  _MENU_",
+             },
+             "stripeClasses": [],
+             "lengthMenu": [7, 10, 20, 50],
+             "pageLength": 7 
+         } );
+     </script>
+     <!-- END PAGE LEVEL CUSTOM SCRIPTS -->
+     <script src="{% static 'assets/js/scrollspyNav.js' %}"></script>
+
+     <script src="http://code.jquery.com/jquery-1.11.0.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+     <script>
+         $('#delete-sector').on('show.bs.modal', function(event) {
+                 var button = $(event.relatedTarget)
+                 var id = button.data('id')
+                 var name = button.data('name')
+               
+                 
+                 var modal = $(this)
+                 modal.find('.modal-body #id').val(id);
+                 modal.find('.modal-body #name').val(name);
+                 
+             
+             });
+     </script> 
+
+<script>
+    $('#edit-sector').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget)
+
+
+            var id = button.data('id')
+            var code = button.data('code')
+            var name = button.data('name')
+            var notes = button.data('notes')
+        
+            
+           
+            
+            var modal = $(this)
+            modal.find('.modal-body #id').val(id);
+            modal.find('.modal-body #code').val(code);
+            modal.find('.modal-body #name').val(name);
+            modal.find('.modal-body #notes').val(notes);
+          
+            
+        
+        });
+</script>
+{% endblock js %}
+    

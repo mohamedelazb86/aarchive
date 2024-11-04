@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    مذكرات ومرسلات
+{% endblock title %}
+
+{% block page_title %}
+    مذكرات ومرسلات
+{% endblock page_title %}
+
+
+{% block css %}
+       <!-- BEGIN PAGE LEVEL CUSTOM STYLES -->
+       <link rel="stylesheet" type="text/css" href="{% static 'plugins/table/datatable/datatables.css' %}">
+       <link rel="stylesheet" type="text/css" href="{% static 'plugins/table/datatable/custom_dt_html5.css' %}">
+       <link rel="stylesheet" type="text/css" href="{% static 'plugins/table/datatable/dt-global_style.css' %}">
+       <!-- END PAGE LEVEL CUSTOM STYLES -->
+        <!--  BEGIN CUSTOM STYLE FILE  -->
+    <link href="{% static 'assets/css/scrollspyNav.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/css/components/custom-modal.css' %}" rel="stylesheet" type="text/css" />
+    <!--  END CUSTOM STYLE FILE  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/pikaday.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css">
+{% endblock css %}
+    
+
+
+{% block body %}
+
+{% include 'message.py' %}
+<button type="button" class="btn btn-info mb-2 mr-2" data-toggle="modal" data-target="#add-user-document">إضافة مستندات الموظفين</button>
+
+<div id="add-user-document" class="modal animated slideInUp custo-slideInUp" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة مستندات الموظفين</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'mail:add-user-document' %}" method='post' enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <label for="exampleFormControlInput1">البيان </label>
+                        <input class="form-control form-control-lg" type="text" id="statment" name="statment">
+
+                        <label for="exampleFormControlInput1">نوع المستند </label>
+                        <input class="form-control form-control-lg" type="text" id="document_type" name="document_type">
+
+
+                        <label for="exampleFormControlInput1">ملاحظات </label>
+                        <input class="form-control form-control-lg" type="text" id="notes" name="notes">
+
+                        <label>الملف</label><span class="text-danger">* صيغة المرفق pdf </span>
+                        <div class="col">
+                            <input class="form-control custom-file-input" type="file" name="file" class="file" accept=".pdf" id="uploadPDF" onchange="PreviewImage();" required> <label class="custom-file-label" for="customFile">اختر الملف</label>
+                        </div>
+                        
+                        <label for="exampleFormControlInput1">التاريخ </label>
+                        <input type="text" class="form-control" id="date" name="date" placeholder="Select a date">
+                        
+                    <div class="modal-footer md-button">
+                        <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> تراجع</button>
+                        <button type="submit" class="btn btn-primary">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="delete-user-document" class="modal animated slideInUp custo-slideInUp" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> حذف مذكرات</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'mail:delete-user-document' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <p class="modal-text">هل تريد حذف هذه المذكرة  ؟؟</p>
+                    <input class="form-control form-control-lg" type="hidden" id="id" name="id">
+                    <input class="form-control form-control-lg" type="text" id="statment" name="statment">
+                    
+                    <div class="modal-footer md-button">
+                        <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> تراجع</button>
+                        <button type="submit" class="btn btn-primary">حذف</button>
+                    </div>
+               </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<table id="html5-extension" class="table table-hover non-hover" style="width:100%">
+    <thead>
+        <tr>
+            <th>المسلسل</th>
+            <th>البيان</th>
+            <th>نوع المستند</th>
+            <th>التاريخ</th>
+            <th> ملاحظات</th>
+            <th> المستند</th>
+            <th> المستخدم</th>
+          
+            <th class="dt-no-sorting">العمليات</th>
+        </tr>
+    </thead>
+    <tbody>
+   
+   {% for object in user_document %}  
+  
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{object.statment}}</td>
+            <td>{{object.document_type}}</td>
+            <td>{{object.date}}</td>
+            <td>{{object.notes}}</td>
+            <td>{{object.file.url}}</td>
+            <td>{{object.user}}</td>
+            
+          
+            <td>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-dark btn-sm">العمليات</button>
+                    <button type="button" class="btn btn-dark btn-sm dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuReference1">
+                        <a class="dropdown-item" href="#" data-target="#delete-user-document" data-toggle="modal"
+                        data-id="{{object.id}}"
+                        data-statment="{{object.statment}}"
+                        
+                        
+                        >حذف</a>
+                        <a class="dropdown-item" href="{{object.file.url}}">عرض</a>
+                        
+                    </div>
+                    </div>
+            </td>
+        </tr>
+   {% endfor %}
+     
+    </tbody>
+</table>
+
+
+
+
+{% endblock body %}
+
+
+{% block js %}
+    <!-- BEGIN PAGE LEVEL CUSTOM SCRIPTS -->
+    <script src="{% static 'plugins/table/datatable/datatables.js' %}"></script>
+    <!-- NOTE TO Use Copy CSV Excel PDF Print Options You Must Include These Files  -->
+    <script src="{% static 'plugins/table/datatable/button-ext/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/table/datatable/button-ext/jszip.min.js' %}"></script>    
+    <script src="{% static 'plugins/table/datatable/button-ext/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/table/datatable/button-ext/buttons.print.min.js' %}"></script>
+    <script>
+        $('#html5-extension').DataTable( {
+            "dom": "<'dt--top-section'<'row'<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'B><'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>>>" +
+        "<'table-responsive'tr>" +
+        "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count  mb-sm-0 mb-3'i><'dt--pagination'p>>",
+            buttons: {
+                buttons: [
+                   
+                ]
+            },
+            "oLanguage": {
+                "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+                "sInfo": "Showing page _PAGE_ of _PAGES_",
+                "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                "sSearchPlaceholder": "Search...",
+               "sLengthMenu": "Results :  _MENU_",
+            },
+            "stripeClasses": [],
+            "lengthMenu": [7, 10, 20, 50],
+            "pageLength": 7 
+        } );
+    </script>
+    <!-- END PAGE LEVEL CUSTOM SCRIPTS -->
+
+        <!--  BEGIN CUSTOM SCRIPT FILE  -->
+        <script src="{% static 'assets/js/scrollspyNav.js' %}"></script>
+        <script>
+            $('#yt-video-link').click(function () {
+                var src = 'https://www.youtube.com/embed/YE7VzlLtp-4';
+                $('#videoMedia1').modal('show');
+                $('<iframe>').attr({
+                    'src': src,
+                    'width': '560',
+                    'height': '315',
+                    'allow': 'encrypted-media'
+                }).css('border', '0').appendTo('#videoMedia1 .video-container');
+            });
+            $('#vimeo-video-link').click(function () {
+                var src = 'https://player.vimeo.com/video/1084537';
+                $('#videoMedia2').modal('show');
+                $('<iframe>').attr({
+                    'src': src,
+                    'width': '560',
+                    'height': '315',
+                    'allow': 'encrypted-media'
+                }).css('border', '0').appendTo('#videoMedia2 .video-container');
+            });
+            $('#videoMedia1 button, #videoMedia2 button').click(function () {
+                $('#videoMedia1 iframe, #videoMedia2 iframe').removeAttr('src');
+            });
+        </script>    
+        <!--  END CUSTOM SCRIPT FILE  -->
+
+        <script> 
+            document.addEventListener('DOMContentLoaded', function() { 
+                new Pikaday({  
+                    field: document.getElementById('date'), 
+                    format: 'd-m-Y', // Set your desired date format 
+                    defaultDate: new Date(), // Set today's date as the default 
+                    toString(date, format) { 
+                        // Customize the date format displayed in the input 
+                        const day = date.getDate().toString().padStart(2, '0'); 
+                        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based 
+                        const year = date.getFullYear(); 
+         
+                        return `${year}-${month}-${day}`; // Display format (e.g., "02-10-2024") 
+                    }, 
+                    setDefaultDate: true    // Ensure the default date is displayed 
+                }); 
+            }); 
+        </script>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script>
+    $('#delete-user-document').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget)
+            var id = button.data('id')
+            var statment = button.data('statment')
+          
+            
+            var modal = $(this)
+            modal.find('.modal-body #id').val(id);
+            modal.find('.modal-body #statment').val(statment);
+            
+        
+        });
+</script> 
+{% endblock js %}
+    
+    
+    

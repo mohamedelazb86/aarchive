@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    كل المستندات
+{% endblock title %}
+
+
+{% block page_title %}
+    كل المستندات 
+{% endblock page_title %}
+ 
+
+{% block css %}
+        <!-- BEGIN PAGE LEVEL CUSTOM STYLES -->
+        <link rel="stylesheet" type="text/css" href="{% static 'plugins/table/datatable/datatables.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'plugins/table/datatable/custom_dt_html5.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'plugins/table/datatable/dt-global_style.css' %}">
+        <!-- END PAGE LEVEL CUSTOM STYLES -->
+         <!--  BEGIN CUSTOM STYLE FILE  -->
+    <link href="{% static 'assets/css/scrollspyNav.css' %}" rel="stylesheet" type="text/css" />
+    
+    <!--  END CUSTOM STYLE FILE  -->    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/pikaday.min.js"></script>
+{% endblock css %}
+    
+
+{% block body %}
+{% include 'message.py' %}
+
+<form action="{% url 'document:all-document' %}" method="post" class="col-lg-12">
+    {% csrf_token %}
+    <div class="card component-card_1 col-lg-12">
+        <div class="card-body">
+            <div class="row">
+                                            
+                <div class="col-xl-3 mb-xl-0 mb-2">
+                    <label for="exampleFormControlInput1">نوع المستند</label>
+    
+                    <select class="form-control form-control-lg" id="document_type" name="document_type">
+                        
+                        <option disabled>نوع المستند </option>
+                    
+                    {% for item in document_type %}
+            
+                        <option value="{{item.id}}">{{item}}</option>
+                    {% endfor %}
+                        
+                    </select>
+                </div>
+                <div class="col-xl-3">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1"> من </label>
+                        <input type="date" class="form-control" name="date_from"  placeholder="تاريخ بداية التقرير">
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">إلى </label>
+                        <input type="date" class="form-control"  name="date_to" placeholder="تاريخ نهاية التقرير">
+                    </div>
+                </div>
+
+                <div class="col-xl-3">
+                    <div class="form-group">
+                        <br>
+                        <br>
+                        <button class="btn btn-outline-primary mb-2">عرض</button>
+                    </div>
+                </div>
+    
+                
+    
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+
+<table id="html5-extension" class="table table-hover non-hover" style="width:100%">
+    <thead>
+        <tr>
+            <th>المسلسل</th>
+            <th>البيان</th>
+            <th>المستند</th>
+            <th>التاريخ</th>
+            <th>نوع المستند</th>
+            <th>المقاول </th>
+          
+            <th class="dt-no-sorting">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    
+    {% for object in documents %}
+         <tr>
+            <td> {{forloop.counter}}</td>
+            <td>{{object.statment}}</td>
+            <td>{{object.file.url}}</td>
+            
+            <td>{{object.date}}</td>
+            <td>{{object.document_type}}</td>
+            <td>{{object.contractor}}</td>
+            
+            
+           
+            <td>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-dark btn-sm">العمليات</button>
+                    <button type="button" class="btn btn-dark btn-sm dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuReference1">
+                        <a class="dropdown-item" href="#">حذف</a>
+                        <a class="dropdown-item" href="{{object.file.url}}">عرض</a>
+                       
+                    </div>
+                    </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock body %}
+
+
+{% block js %}
+   <!-- BEGIN PAGE LEVEL CUSTOM SCRIPTS -->
+   <script src="{% static 'plugins/table/datatable/datatables.js' %}"></script>
+   <!-- NOTE TO Use Copy CSV Excel PDF Print Options You Must Include These Files  -->
+   <script src="{% static 'plugins/table/datatable/button-ext/dataTables.buttons.min.js' %}"></script>
+   <script src="{% static 'plugins/table/datatable/button-ext/jszip.min.js' %}"></script>    
+   <script src="{% static 'plugins/table/datatable/button-ext/buttons.html5.min.js' %}"></script>
+   <script src="{% static 'plugins/table/datatable/button-ext/buttons.print.min.js' %}"></script>
+   <script>
+       $('#html5-extension').DataTable( {
+           "dom": "<'dt--top-section'<'row'<'col-sm-12 col-md-6 d-flex justify-content-md-start justify-content-center'B><'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-center mt-md-0 mt-3'f>>>" +
+       "<'table-responsive'tr>" +
+       "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count  mb-sm-0 mb-3'i><'dt--pagination'p>>",
+           buttons: {
+               buttons: [
+                
+               ]
+           },
+           "oLanguage": {
+               "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' },
+               "sInfo": "Showing page _PAGE_ of _PAGES_",
+               "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+               "sSearchPlaceholder": "Search...",
+              "sLengthMenu": "Results :  _MENU_",
+           },
+           "stripeClasses": [],
+           "lengthMenu": [7, 10, 20, 50],
+           "pageLength": 7 
+       } );
+   </script>
+   <!-- END PAGE LEVEL CUSTOM SCRIPTS -->  
+
+    <!--  BEGIN CUSTOM SCRIPTS FILE  -->
+    <script src="{% static 'assets/js/scrollspyNav.js' %}"></script>
+
+    <script> 
+        document.addEventListener('DOMContentLoaded', function() { 
+            new Pikaday({  
+                field: document.getElementById('date'), 
+                format: 'd-m-Y', // Set your desired date format 
+                defaultDate: new Date(), // Set today's date as the default 
+                toString(date, format) { 
+                    // Customize the date format displayed in the input 
+                    const day = date.getDate().toString().padStart(2, '0'); 
+                    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based 
+                    const year = date.getFullYear(); 
+     
+                    return `${year}-${month}-${day}`; // Display format (e.g., "02-10-2024") 
+                },
+                 
+                setDefaultDate: true    // Ensure the default date is displayed 
+            }); 
+        }); 
+    </script>
+    
+{% endblock js %}
+    
+    
+    
